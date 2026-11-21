@@ -1,3 +1,9 @@
+## [1.12.9](https://github.com/0x11DFE/morphe-patches/compare/v1.12.8...v1.12.9) (2026-11-21)
+
+### Bug Fixes
+
+* **scene:** ignore daemon startup writes when arming the gate poker ([d6e6eb5](https://github.com/0x11DFE/morphe-patches/commit/d6e6eb56e7c276f603f351d2e60adb692304ca2f))
+
 ## [1.12.8](https://github.com/0x11DFE/morphe-patches/compare/v1.12.7...v1.12.8) (2026-11-21)
 
 ### Bug Fixes
