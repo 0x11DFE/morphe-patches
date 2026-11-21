@@ -90,7 +90,14 @@ writes: until one of the two candidate bytes is OBSERVED changing (the
 validator engaging RESTRICT ~40s after an app connect, or the 63s one-shot
 clearing MASTER), it only reads (2s cadence for ~10 minutes, then 10s).
 The first daemon-initiated change arms it (`/dev/.mp_gate_evid`, keyed by
-daemon pid); from then on it pokes and holds as before. Gate-less builds
+daemon pid); from then on it pokes and holds as before. Daemons younger
+than ~30s only refresh the observation baseline: a fresh daemon
+initializes its Go globals during its first seconds, and those startup
+writes are init noise, not gate evidence (observed as a false arm ~10s
+after daemon spawn on a PR5 reboot before this grace existed). The
+earliest legitimate validator write is an app connect plus its 40s delay,
+so the grace cannot mask a real gate event; it also covers a daemon
+restarting under a live observation loop. Gate-less builds
 like PR5's daemon are never touched at all. An earlier revision
 (v1.12.7) used a hardcoded daemon-md5 blacklist instead; it was replaced
 by this runtime check because a static list cannot cover future builds.

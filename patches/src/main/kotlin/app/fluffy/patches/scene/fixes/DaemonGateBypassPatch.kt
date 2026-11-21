@@ -94,7 +94,10 @@ val daemonGateBypassPatch = patch(
  *   hit validates the anchor with one 16-byte read before poking.
  * - observe-before-poke: /dev/.mp_gate_evid records the daemon pid only after a
  *   daemon-initiated change at a candidate byte; until then the loop only reads
- *   (2s cadence for ~10min, then 10s) and never writes.
+ *   (2s cadence for ~10min, then 10s) and never writes. Daemons younger than
+ *   ~30s only refresh the baseline: their startup writes are init noise, not
+ *   gate evidence (the earliest legitimate validator write is an app connect
+ *   plus its 40s delay).
  * - temp files under /dev: the launcher can run before /data is writable.
  */
 
@@ -166,6 +169,16 @@ mp_gate_poke() {
         # write would only risk hitting unrelated globals. Observe, wait for
         # the daemon's own write (validator engaging RESTRICT ~40s after a
         # connect, or the 63s one-shot clearing MASTER), then hold.
+        # A daemon younger than ~30s is still initializing its globals (a
+        # fresh instance under a live loop also restarts against a stale
+        # baseline), so keep refreshing the baseline until it settles:
+        # startup writes must not count as gate evidence.
+        MP_AGE=§(awk -v u="§(cut -d. -f1 /proc/uptime)" -v s="§(awk '{print §22}' /proc/§MP_P/stat)" 'BEGIN{printf "%d", u - s/100}')
+        if [ "§MP_AGE" -lt 30 ]; then
+            MP_PM="§MB"
+            MP_PR="§RB"
+            return 0
+        fi
         if [ -n "§MP_PM" ] && { [ "§MB" != "§MP_PM" ] || [ "§RB" != "§MP_PR" ]; }; then
             echo "§MP_P" > /dev/.mp_gate_evid
         else
