@@ -218,7 +218,7 @@ private fun findDaemonFingerprint(): String {
         if (!file.exists() || file.length() < 500_000 || file.length() > 8_000_000) continue
         file.inputStream().use { input ->
             val head = ByteArray(4)
-            if (input.read(head) != 4 || head[0] != 0x7f || head[1].toInt() != 'E') continue
+            if (input.read(head) != 4 || head[0] != 0x7f.toByte() || head[1] != 0x45.toByte()) continue
             val md = MessageDigest.getInstance("MD5")
             md.update(head)
             val buf = ByteArray(1 shl 16)
