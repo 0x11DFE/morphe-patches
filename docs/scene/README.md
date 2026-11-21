@@ -74,21 +74,32 @@ gate provably stays open. Unknown or non-root setups are untouched.
 
 Logs one line per daemon instance to `files/gp.log` next to the daemon.
 
-### Daemon build check (PR5 and later)
+### Runtime self-verification of the gate offsets
 
-The IV-relative deltas are a property of the daemon binary's Go data layout,
-not of the app. N1 2026.11 PreRelease 5 bundles a new daemon (md5
-`a8bc3727a354398d369d6e223a2c10dc`, the IV anchor moved from image offset
-`0x69c230` to `0x6ae7d0`), and on it the daemon no longer flips any byte at
-the old MASTER/RESTRICT offsets: verified on device with the poker dead
-through a full app reconnect + validator cycle - dashboard stats kept
-updating and a writable-memory diff showed no writes at the deltas. The
-monitor gate of the 2026.11.17 daemon is simply not there. The patch
-fingerprints the bundled daemon and skips the poker for builds listed in
-`STALE_DAEMON_MD5` (poking the old offsets would hit unrelated globals).
-On such builds the patch is a deliberate no-op that logs a note. If a future
-build re-introduces the stats freeze, re-derive the offsets relative to the
-new IV anchor and remove the hash from the set.
+The IV-relative offsets (MASTER = IV-720, RESTRICT = IV+319578) are a
+property of each daemon build's Go data layout, not of the app. N1 2026.11
+PreRelease 5 ships a rewritten daemon (the IV anchor moved from image
+offset `0x69c230` to `0x6ae7d0`), and on it the old offsets are stale: with
+the poker dead through a full app reconnect + validator cycle, dashboard
+stats kept updating and a writable-memory diff showed no daemon writes at
+the deltas - that build simply has no monitor gate. Conversely, nothing but
+the daemon ever closes the gate on builds that have one.
+
+The poker therefore proves the offsets per daemon instance before it ever
+writes: until one of the two candidate bytes is OBSERVED changing (the
+validator engaging RESTRICT ~40s after an app connect, or the 63s one-shot
+clearing MASTER), it only reads (2s cadence for ~10 minutes, then 10s).
+The first daemon-initiated change arms it (`/dev/.mp_gate_evid`, keyed by
+daemon pid); from then on it pokes and holds as before. Gate-less builds
+like PR5's daemon are never touched at all. An earlier revision
+(v1.12.7) used a hardcoded daemon-md5 blacklist instead; it was replaced
+by this runtime check because a static list cannot cover future builds.
+
+If a future build re-freezes the stats WHILE the poker is running and
+never arms, the daemon closed a gate elsewhere: re-derive the offsets
+(snapshot the small rw regions, force a reconnect, snapshot again, diff
+for 00->01 / 01->00 flips near the IV anchor) and update the deltas in
+`DaemonGateBypassPatch.kt`.
 
 ## Technical reference: what the unlock replicates
 
@@ -140,11 +151,11 @@ all three builds.
 ## Updating to a new Scene build
 
 1. Add the new `versionName` to `COMPATIBILITY_SCENE` in `shared/Constants.kt`.
-2. If the update bundles a new scene-daemon (raw extensionless res/ ELF,
-   ~1.9MB): test on device whether the daemon still writes the gate bytes at
-   the IV-relative offsets (MASTER = IV-720, RESTRICT = IV+319578) during a
-   reconnect + validator cycle. If not, and stats still update without the
-   poker, add the daemon's md5 to `STALE_DAEMON_MD5` in DaemonGateBypassPatch.kt.
+2. Daemon updates need no action: the embedded poker verifies the gate
+   offsets at runtime per daemon instance (it only writes after observing
+   the daemon change a candidate byte). Only if stats freeze WITH the poker
+   running do the offsets need re-deriving (see the runtime
+   self-verification section above).
 3. If the release fails to patch: verify the license state parser still starts
    with the three-instruction state load (`this.b.toString()`), and that the
    fingerprinted strings (`success@`, `yyyy-MM-dd`, `MD5`, `random_id2`) still
