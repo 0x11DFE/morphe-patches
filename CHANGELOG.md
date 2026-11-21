@@ -1,3 +1,14 @@
+## [1.12.7](https://github.com/0x11DFE/morphe-patches/compare/v1.12.6...v1.12.7) (2026-11-21)
+
+### Bug Fixes
+
+* **scene:** correct the daemon ELF magic check types ([2bcea3b](https://github.com/0x11DFE/morphe-patches/commit/2bcea3bd9453424f70e7c8ed6be847561b767f27))
+* **scene:** skip the gate poker on daemon builds with stale offsets ([5297508](https://github.com/0x11DFE/morphe-patches/commit/52975085b808764bc6fe4748efeb53813a682828))
+
+### Updated App Support
+
+* **scene:** support N1 2026.11 PreRelease 5 ([9f64461](https://github.com/0x11DFE/morphe-patches/commit/9f64461db66a752288dd8cb1cb349d563ca9d301))
+
 ## [1.12.6](https://github.com/0x11DFE/morphe-patches/compare/v1.12.5...v1.12.6) (2026-11-21)
 
 ### Bug Fixes

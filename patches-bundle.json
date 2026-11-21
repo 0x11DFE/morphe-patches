@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-21T18:38:50",
-  "description": "## [1.12.6](https://github.com/0x11DFE/morphe-patches/compare/v1.12.5...v1.12.6) (2026-11-21)\n\n### Bug Fixes\n\n* **scene:** make the daemon gate poker idle-cheap ([06d39ce](https://github.com/0x11DFE/morphe-patches/commit/06d39cee8d4fe84a9febfd83fc2a586aa21f7d31))\n* **scene:** repair the duplicated poker block in the patch source ([d094ca3](https://github.com/0x11DFE/morphe-patches/commit/d094ca3b46ed15603acb6ae467b1fbcf71e8a5b0))",
-  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.12.6/patches-1.12.6.mpp",
+  "created_at": "2026-11-21T19:32:42",
+  "description": "## [1.12.7](https://github.com/0x11DFE/morphe-patches/compare/v1.12.6...v1.12.7) (2026-11-21)\n\n### Bug Fixes\n\n* **scene:** correct the daemon ELF magic check types ([2bcea3b](https://github.com/0x11DFE/morphe-patches/commit/2bcea3bd9453424f70e7c8ed6be847561b767f27))\n* **scene:** skip the gate poker on daemon builds with stale offsets ([5297508](https://github.com/0x11DFE/morphe-patches/commit/52975085b808764bc6fe4748efeb53813a682828))\n\n### Updated App Support\n\n* **scene:** support N1 2026.11 PreRelease 5 ([9f64461](https://github.com/0x11DFE/morphe-patches/commit/9f64461db66a752288dd8cb1cb349d563ca9d301))",
+  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.12.7/patches-1.12.7.mpp",
   "signature_download_url": "",
-  "version": "1.12.6"
+  "version": "1.12.7"
 }
