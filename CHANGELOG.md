@@ -1,3 +1,9 @@
+## [1.12.8](https://github.com/0x11DFE/morphe-patches/compare/v1.12.7...v1.12.8) (2026-11-21)
+
+### Bug Fixes
+
+* **scene:** make the gate poker verify its offsets at runtime ([861519c](https://github.com/0x11DFE/morphe-patches/commit/861519c0881ce5d569d72abe240b15f445fe18b4))
+
 ## [1.12.7](https://github.com/0x11DFE/morphe-patches/compare/v1.12.6...v1.12.7) (2026-11-21)
 
 ### Bug Fixes
