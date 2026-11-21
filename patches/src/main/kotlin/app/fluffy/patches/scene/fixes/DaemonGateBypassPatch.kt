@@ -6,6 +6,7 @@ import app.morphe.patcher.patch.patch
 import app.morphe.patcher.patch.resourceFile
 import app.morphe.patcher.patch.listApkEntries
 import java.io.File
+import java.security.MessageDigest
 
 /**
  * The root scene-daemon gates its "adb-monitor-*" ops (the live stats behind
@@ -41,6 +42,14 @@ val daemonGateBypassPatch = patch(
     compatibleWith(COMPATIBILITY_SCENE)
 
     execute {
+        val daemonMd5 = findDaemonFingerprint()
+        if (daemonMd5 in STALE_DAEMON_MD5) {
+            println(
+                "Scene daemon gate bypass: daemon build $daemonMd5 has stale gate offsets - " +
+                    "poker skipped (2026.11 PR5's daemon no longer flips the IV-relative bytes)",
+            )
+            return@execute
+        }
         val up = findLauncherResource()
         val text = up.readText()
 
@@ -180,6 +189,49 @@ mp_gate_poke
 # <<< morphe-patches daemon gate poker <<<
 """
 
+
+/**
+ * Daemon builds whose data layout no longer matches the poker's IV-relative
+ * offsets. 2026.11 PR5 ships a rewritten daemon (md5 a8bc3727..., IV anchor
+ * moved ~75KB) that was verified on device to not flip any byte at the old
+ * MASTER/RESTRICT deltas during a full app reconnect + validator cycle, while
+ * dashboard stats kept updating without any poker: the monitor gate as such
+ * is gone there. Poking the old offsets would hit unrelated Go globals, so
+ * the poker is skipped for these builds. Verify a new daemon on device before
+ * assuming the poker still applies.
+ */
+private val STALE_DAEMON_MD5 = setOf(
+    "a8bc3727a354398d369d6e223a2c10dc", // bundled by N1 2026.11 PreRelease 5
+)
+
+/**
+ * The daemon ships as a raw, extensionless res/ entry (~1.9MB ELF; the bpf
+ * objects are far smaller). Find it by shape and return its MD5 hex, or an
+ * empty string when the APK has no such entry.
+ */
+private fun findDaemonFingerprint(): String {
+    val candidates = listApkEntries("res/").filter { entry ->
+        !entry.substringAfterLast('/').contains('.')
+    }
+    for (entry in candidates) {
+        val file = runCatching { resourceFile(entry) }.getOrNull() ?: continue
+        if (!file.exists() || file.length() < 500_000 || file.length() > 8_000_000) continue
+        file.inputStream().use { input ->
+            val head = ByteArray(4)
+            if (input.read(head) != 4 || head[0] != 0x7f || head[1].toInt() != 'E') continue
+            val md = MessageDigest.getInstance("MD5")
+            md.update(head)
+            val buf = ByteArray(1 shl 16)
+            while (true) {
+                val n = input.read(buf)
+                if (n < 0) break
+                md.update(buf, 0, n)
+            }
+            return md.digest().joinToString("") { "%02x".format(it) }
+        }
+    }
+    return ""
+}
 
 /**
  * The daemon launcher is the raw resource "up", but its obfuscated archive
