@@ -2,7 +2,7 @@
 
 omarea's device toolbox. The "Scene N1" license is enforced client-side with a
 root daemon and an activation server. Supported versions: N1 2026.10 Alpha13,
-N1 2026.11 PreRelease 1, N1 2026.11 PreRelease 2.
+N1 2026.11 PreRelease 1, N1 2026.11 PreRelease 2, N1 2026.11 PreRelease 5.
 APK downloads: [download.omarea.com](https://download.omarea.com/#/platform)
 and the [omarea mirror](https://omarea.lanzout.com/b0he4yszi).
 
@@ -74,6 +74,22 @@ gate provably stays open. Unknown or non-root setups are untouched.
 
 Logs one line per daemon instance to `files/gp.log` next to the daemon.
 
+### Daemon build check (PR5 and later)
+
+The IV-relative deltas are a property of the daemon binary's Go data layout,
+not of the app. N1 2026.11 PreRelease 5 bundles a new daemon (md5
+`a8bc3727a354398d369d6e223a2c10dc`, the IV anchor moved from image offset
+`0x69c230` to `0x6ae7d0`), and on it the daemon no longer flips any byte at
+the old MASTER/RESTRICT offsets: verified on device with the poker dead
+through a full app reconnect + validator cycle - dashboard stats kept
+updating and a writable-memory diff showed no writes at the deltas. The
+monitor gate of the 2026.11.17 daemon is simply not there. The patch
+fingerprints the bundled daemon and skips the poker for builds listed in
+`STALE_DAEMON_MD5` (poking the old offsets would hit unrelated globals).
+On such builds the patch is a deliberate no-op that logs a note. If a future
+build re-introduces the stats freeze, re-derive the offsets relative to the
+new IV anchor and remove the hash from the set.
+
 ## Technical reference: what the unlock replicates
 
 The known "Scene N1" mod for `N1 2026.10 Alpha13` edits exactly three methods in
@@ -124,7 +140,12 @@ all three builds.
 ## Updating to a new Scene build
 
 1. Add the new `versionName` to `COMPATIBILITY_SCENE` in `shared/Constants.kt`.
-2. If the release fails to patch: verify the license state parser still starts
+2. If the update bundles a new scene-daemon (raw extensionless res/ ELF,
+   ~1.9MB): test on device whether the daemon still writes the gate bytes at
+   the IV-relative offsets (MASTER = IV-720, RESTRICT = IV+319578) during a
+   reconnect + validator cycle. If not, and stats still update without the
+   poker, add the daemon's md5 to `STALE_DAEMON_MD5` in DaemonGateBypassPatch.kt.
+3. If the release fails to patch: verify the license state parser still starts
    with the three-instruction state load (`this.b.toString()`), and that the
    fingerprinted strings (`success@`, `yyyy-MM-dd`, `MD5`, `random_id2`) still
    appear in the expected methods.
