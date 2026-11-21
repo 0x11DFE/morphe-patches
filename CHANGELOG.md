@@ -1,3 +1,10 @@
+## [1.12.6](https://github.com/0x11DFE/morphe-patches/compare/v1.12.5...v1.12.6) (2026-11-21)
+
+### Bug Fixes
+
+* **scene:** make the daemon gate poker idle-cheap ([06d39ce](https://github.com/0x11DFE/morphe-patches/commit/06d39cee8d4fe84a9febfd83fc2a586aa21f7d31))
+* **scene:** repair the duplicated poker block in the patch source ([d094ca3](https://github.com/0x11DFE/morphe-patches/commit/d094ca3b46ed15603acb6ae467b1fbcf71e8a5b0))
+
 ## [1.12.5](https://github.com/0x11DFE/morphe-patches/compare/v1.12.4...v1.12.5) (2026-11-19)
 
 ### Bug Fixes
