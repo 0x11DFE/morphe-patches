@@ -10,14 +10,7 @@ then activates with the Google Play order number or PayPal code.
 Unlocks premium fully offline. Every signed server request is answered
 locally with a valid premium response, the startup APK self-check is
 bypassed, and profile data comes from the app's own bundled device table.
-No server connection is made or needed for licensing, and the in-app update
-check reports the real latest release with its download link.
-
-## Fix Stock Crashes
-
-Fixes two crashes that also happen in the unpatched app: the refresh rate
-slider throwing when its value range collapses to zero, and the refresh
-rate overlay failing to reposition before it is attached to the window.
+No server connection is made or needed for licensing.
 
 ## How the license works
 
@@ -55,9 +48,10 @@ native `f`/`g`/`h` exports can exit the process on invalid licence input.
   Adler-32 of the installed dex, which is what kept a patched app in its
   loading state forever.
 
-The offline response embeds the current public release (9.2.1x / 370 with
-the GitHub APK link). Bump `OFFLINE_LICENSE_JSON` in the patch when a new
-Galaxy MaxHz version ships.
+The offline response reports the pinned version as the latest one, so the
+in-app update check always completes with "up to date". Watch upstream
+releases yourself; when a new Galaxy MaxHz version ships, the patch is
+bumped to it anyway.
 
 ## Random device ID
 
@@ -66,18 +60,18 @@ baked per patch run so it stays stable for that install.
 
 ## Verify on device
 
-1. Patch a stock 9.2.0x APK with Unlock Premium (and Fix Stock Crashes).
+1. Patch a stock 9.2.0x APK with Unlock Premium.
 2. Install, open once, and tap through the Android permission-review
    dialog (the app targets an old SDK, so Android shows it once per
    install).
 3. The splash clears, the brief loading indicator hides, and the About
-   screen shows Premium with the 9.2.1x update available.
+   screen shows Premium.
 4. Airplane mode changes nothing: every request path is answered locally.
 
 ## New app version
 
-Re-run the fingerprints against the new APK: the R8 names in this patch
-(`t0/c1`, `fc/b`, `ka/e`, `pa/e`, `yf/b`, `x5/e`, `q8/d`, `fa/r0`) move
-between releases. Update `COMPATIBILITY_GALAXYMAXHZ` with the new
-version, refresh the premium licence-type constant if `xf/b` changed,
-and bump the embedded release info in `OFFLINE_LICENSE_JSON`.
+Re-run the fingerprints against the new APK: the R8 names behind them
+(`t0/c1`, `fc/b`, `ka/e`, `pa/e`, `yf/b`, `x5/e`) move between releases.
+Update `COMPATIBILITY_GALAXYMAXHZ` with the new version, refresh the
+premium licence-type constant if `xf/b` changed, and keep the version
+keys in `OFFLINE_LICENSE_JSON` in sync with the pinned target.
