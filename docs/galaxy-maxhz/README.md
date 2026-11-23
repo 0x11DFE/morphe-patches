@@ -42,7 +42,7 @@ Verified on version 9.2.0x (versionCode 369).
 - `KapWorker` revalidates the license. Its terminal step checks the premium
   flow and stops when premium is true.
 
-## What the patch changes
+## What Unlock Premium changes
 
 | Target | Change |
 | --- | --- |
@@ -54,27 +54,16 @@ Verified on version 9.2.0x (versionCode 369).
 | `Landroidx/appcompat/util/SeslUtil;-><init>(Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Long;Z)V` | force the boolean parameter true |
 | `Lcom/tribalfs/gmh/application/GmhApp;->onCreate()V` | nop the `c1.s(Context)` call |
 
-## Verify on device
+## Random device ID
 
-1. Apply the patch in Morphe Manager and install the patched APK.
-2. Open Galaxy MaxHz. Premium-only entries (for example per-app profiles,
-   resolution control in quick settings, max Hz presets) are available.
-3. The donate dialog reports premium active.
+Replaces the fixed salt in the native device fingerprint with a random salt
+baked in when the patch is applied. Each patched APK reports its own stable
+device id to the licensing server; re-patch the APK to get a new id. The
+local license check does not use the salt and keeps working.
 
-## New app version
-
-R8 names such as `Lt0/c1;` and `Luf/a;` change between releases. Locate the
-validator by the string-decrypt calls (`Luf/a;->a(J)` with seeds ending
-`0x012f1e0d`) and by the native exports `Java_t0_c1_*` in libgmh-lib.so, then
-re-verify each target above and add the version to the compatibility constant.
-
-
-## Randomise Device ID
-
-Replaces the fixed salt in the native device fingerprint with a random value
-generated on every app start, so the device id sent to the licensing server
-changes each run. The local license check does not use the salt and keeps
-working.
+The salt is generated per patch run, like the Scene "Random device ID" patch.
+With Unlock Premium applied the license requests are stubbed, so this patch
+matters when the app runs the native request path.
 
 Verified on version 9.2.0x (versionCode 369).
 
@@ -89,8 +78,22 @@ Verified on version 9.2.0x (versionCode 369).
 - `hg()` = the MessageDigest/Base64 pipeline plus the same salt.
 - `hi()`/`hj()` = APK signature reads. `hk()` = boot_count.
 
-The patch keeps elements 0 to 3 unchanged and returns a random UUID
-(cached per process through a system property) as element 4. The digest over
-android_id plus the random salt makes the reported device id rotate per app
-start. The local verdict `g` validates the stored fields against the APK
-hash only, so an activated license stays valid.
+The patch keeps elements 0 to 3 unchanged and bakes a random 24-char Base64
+salt as element 4. The digest over android_id plus the random salt makes the
+reported device id unique per patched APK. The local verdict `g` validates
+the stored fields against the APK hash only, so an activated license stays
+valid.
+
+## Verify on device
+
+1. Apply the patch in Morphe Manager and install the patched APK.
+2. Open Galaxy MaxHz. Premium-only entries (for example per-app profiles,
+   resolution control in quick settings, max Hz presets) are available.
+3. The donate dialog reports premium active.
+
+## New app version
+
+R8 names such as `Lt0/c1;` and `Luf/a;` change between releases. Locate the
+validator by the string-decrypt calls (`Luf/a;->a(J)` with seeds ending
+`0x012f1e0d`) and by the native exports `Java_t0_c1_*` in libgmh-lib.so, then
+re-verify each target above and add the version to the compatibility constant.
