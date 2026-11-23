@@ -1,3 +1,9 @@
+## [1.15.0](https://github.com/0x11DFE/morphe-patches/compare/v1.14.0...v1.15.0) (2026-11-23)
+
+### New Features
+
+* **galaxymaxhz:** add Randomise Device ID patch ([4dd7e15](https://github.com/0x11DFE/morphe-patches/commit/4dd7e154aead661a7480db59ed024431f753b6d6))
+
 ## [1.14.0](https://github.com/0x11DFE/morphe-patches/compare/v1.13.0...v1.14.0) (2026-11-23)
 
 ### New Features

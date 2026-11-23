@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "patches": [
     {
       "name": "Daemon gate bypass",
@@ -112,6 +112,32 @@
             },
             {
               "version": "N1 2026.11 PreRelease 5",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Randomise Device ID",
+      "description": "Replaces the fixed salt in the native device fingerprint with a random value generated on every app start, so the device id sent to the licensing server changes each run. The local license check does not use the salt and keeps working.",
+      "default": true,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.tribalfs.gmh",
+          "name": "Galaxy MaxHz",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#26C6DA",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "9.2.0x",
               "versionCodes": null,
               "isExperimental": false,
               "minSdk": null,

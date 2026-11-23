@@ -23,7 +23,7 @@ are responsible for what you do with it.
 ## Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.14.0](https://github.com/0x11DFE/morphe-patches/releases/tag/v1.14.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;11 patches total
+> **[v1.15.0](https://github.com/0x11DFE/morphe-patches/releases/tag/v1.15.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;12 patches total
 <details open>
 <summary>📦 Scene&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
@@ -64,6 +64,24 @@ are responsible for what you do with it.
 </details>
 
 <details open>
+<summary>📦 Galaxy MaxHz&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
+<br>
+
+**Package name:** `com.tribalfs.gmh`
+
+**🎯 Supported versions:**
+
+| 9.2.0x |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Randomise Device ID](docs/galaxy-maxhz/README.md#randomise-device-id) | Replaces the fixed salt in the native device fingerprint with a random value generated on every app start, so the device id sent to the licensing server changes each run. The local license check does not use the salt and keeps working. |  |
+| [Unlock Premium](docs/galaxy-maxhz/README.md#unlock-premium) | Unlocks all premium features by forcing the license verdicts to true. The native license library and its tamper checks are kept out of the loop, so the patched and re-signed APK runs normally. |  |
+
+</details>
+
+<details open>
 <summary>📦 MD PROXY VPN&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
@@ -79,23 +97,6 @@ are responsible for what you do with it.
 | [Remove Ads](docs/md-proxy/README.md#remove-ads) | Empties the banner, interstitial, rewarded and app-open ad loaders and the rewarded load in the server-row boost button. No ad request leaves the device. Use with 'Unlock Speed Boost' to keep the boost button working. |  |
 | [Unlimited Time](docs/md-proxy/README.md#unlimited-time) | The session clock always reports 100 years, so sessions never expire. The countdown display shows the infinity sign. |  |
 | [Unlock Speed Boost](docs/md-proxy/README.md#unlock-speed-boost) | Grants the per-server boost on tap instead of after an interstitial. Same storage, rocket icon and toast as the ad flow. The 3-minute interstitial while connected is gone as well. Use together with 'Remove Ads'. |  |
-
-</details>
-
-<details open>
-<summary>📦 Galaxy MaxHz&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
-<br>
-
-**Package name:** `com.tribalfs.gmh`
-
-**🎯 Supported versions:**
-
-| 9.2.0x |
-| :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Unlock Premium](docs/galaxy-maxhz/README.md#unlock-premium) | Unlocks all premium features by forcing the license verdicts to true. The native license library and its tamper checks are kept out of the loop, so the patched and re-signed APK runs normally. |  |
 
 </details>
 
