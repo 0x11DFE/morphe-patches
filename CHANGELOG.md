@@ -1,3 +1,9 @@
+## [1.14.0](https://github.com/0x11DFE/morphe-patches/compare/v1.13.0...v1.14.0) (2026-11-23)
+
+### New Features
+
+* **galaxymaxhz:** add Unlock Premium patch for Galaxy MaxHz 9.2.0x ([e246f3d](https://github.com/0x11DFE/morphe-patches/commit/e246f3daeeed896b3a4921868ce562e4d577ae54))
+
 ## [1.13.0](https://github.com/0x11DFE/morphe-patches/compare/v1.12.9...v1.13.0) (2026-11-22)
 
 ### New Features

@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-22T10:50:11",
-  "description": "## [1.13.0](https://github.com/0x11DFE/morphe-patches/compare/v1.12.9...v1.13.0) (2026-11-22)\n\n### New Features\n\n* **scene:** locate the daemon gate by instruction signature ([579bc79](https://github.com/0x11DFE/morphe-patches/commit/579bc7906493e7ddce42cfaee506cb05715dadf6)), closes [#1](https://github.com/0x11DFE/morphe-patches/issues/1)",
-  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.13.0/patches-1.13.0.mpp",
+  "created_at": "2026-11-23T14:12:38",
+  "description": "## [1.14.0](https://github.com/0x11DFE/morphe-patches/compare/v1.13.0...v1.14.0) (2026-11-23)\n\n### New Features\n\n* **galaxymaxhz:** add Unlock Premium patch for Galaxy MaxHz 9.2.0x ([e246f3d](https://github.com/0x11DFE/morphe-patches/commit/e246f3daeeed896b3a4921868ce562e4d577ae54))",
+  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.14.0/patches-1.14.0.mpp",
   "signature_download_url": "",
-  "version": "1.13.0"
+  "version": "1.14.0"
 }
