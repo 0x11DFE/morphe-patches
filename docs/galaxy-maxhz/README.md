@@ -67,3 +67,30 @@ R8 names such as `Lt0/c1;` and `Luf/a;` change between releases. Locate the
 validator by the string-decrypt calls (`Luf/a;->a(J)` with seeds ending
 `0x012f1e0d`) and by the native exports `Java_t0_c1_*` in libgmh-lib.so, then
 re-verify each target above and add the version to the compatibility constant.
+
+
+## Randomise Device ID
+
+Replaces the fixed salt in the native device fingerprint with a random value
+generated on every app start, so the device id sent to the licensing server
+changes each run. The local license check does not use the salt and keeps
+working.
+
+Verified on version 9.2.0x (versionCode 369).
+
+### How the device id is built
+
+`libgmh-lib.so` builds the device id from reflection specs that
+`Lt0/c1;->hh()` and `Lt0/c1;->hg()` return:
+
+- `hh()` = ["android_id", "android/provider/Settings$Secure", "getString",
+  "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",
+  "TR2IWE3S7uNtKeHz4A7GNA=="]. The last element is the digest salt.
+- `hg()` = the MessageDigest/Base64 pipeline plus the same salt.
+- `hi()`/`hj()` = APK signature reads. `hk()` = boot_count.
+
+The patch keeps elements 0 to 3 unchanged and returns a random UUID
+(cached per process through a system property) as element 4. The digest over
+android_id plus the random salt makes the reported device id rotate per app
+start. The local verdict `g` validates the stored fields against the APK
+hash only, so an activated license stays valid.
