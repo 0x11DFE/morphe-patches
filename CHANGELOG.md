@@ -1,3 +1,9 @@
+## [1.18.1](https://github.com/0x11DFE/morphe-patches/compare/v1.18.0...v1.18.1) (2026-11-23)
+
+### Bug Fixes
+
+* re-release pending Galaxy MaxHz changes ([67f025f](https://github.com/0x11DFE/morphe-patches/commit/67f025f5fdfd3241e8d0b288e57d2acd5d7f7515))
+
 ## [1.18.0](https://github.com/0x11DFE/morphe-patches/compare/v1.17.0...v1.18.0) (2026-11-23)
 
 ### New Features
