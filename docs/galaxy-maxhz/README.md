@@ -5,6 +5,10 @@ tribalfs. Premium is a per-device license: the user buys the separate
 "Galaxy Max Hz Donation" app (com.tribalfs.gmh_donate) or donates via PayPal,
 then activates with the Google Play order number or PayPal code.
 
+Supported versions: 9.2.0x and 9.2.1x. 9.2.0x was an in-app rollout build; the
+public GitHub release for that period is 9.2.1x, which is what most people
+have.
+
 ## Unlock Premium
 
 Unlocks premium fully offline. Every signed server request is answered
@@ -21,35 +25,43 @@ hex-named keys (`0x0` status, `0x10` licence type, `0x9` expiry date,
 `0x4` order code, plus `0x24`/`0x12`/`0x36` URL bookkeeping) that the app
 parses and stores in its DataStore. Three layers defend the premium
 state: the native init dereferences null when the installed APK hash
-does not match, `x5/e.R(boolean)` keeps the loading state active when
-`GmhApp.x != GmhApp.y` (a runtime Adler-32 of the installed dex), and the
-native `f`/`g`/`h` exports can exit the process on invalid licence input.
+does not match, a static gate keeps the loading state active when the
+stored native hash differs from the runtime Adler-32 of the installed
+dex, and the native `f`/`g`/`h` exports can exit the process on invalid
+licence input.
 
 ## What Unlock Premium changes
 
-- `t0/c1.e1` returns the expected APK hash so the native init completes,
-  and stores it into `GmhApp.x`.
-- `t0/c1.f1` builds the licence-info object directly with the premium
-  licence type (`xf/b.f * xf/b.h`, computed at runtime) and no expiry;
-  `g1`/`h1` answer their verdicts with true.
+- The hash-feeder wrapper returns the hash its caller passed in and
+  stores it into the field read from the original body, so the native
+  tamper init completes on any build. (The field moved between 9.2.0x
+  and 9.2.1x; the patch reads it instead of hardcoding it.)
+- The licence-info wrapper builds the licence object directly with the
+  premium licence type (`xf/b.f * xf/b.h`, computed at runtime) and no
+  expiry; the two verdict wrappers answer with true.
 - The `SeslUtil` constructor forces its premium boolean before storing it.
-- `fc/b.s` reads the bundled `zV.json` (raw resource `0x7f130005`) with a
-  `Scanner` instead of calling the remote profile fetch, so the app picks
-  the profile entry matching the device on its own.
-- `ka/e.b` — the single choke point for every signed request — returns a
-  synchronously parsed premium response. The callers' own parsers store
-  and apply it as if the server had sent it.
-- `pa/e` is the one caller that must not see that response (it expects the
-  server-tuned profile array under `0x13`); its call site now constructs
-  a plain offline failure so the bundled-config fallback runs.
-- `yf/b` skips an await on a pending-request flow that nothing feeds
-  without the donate-app activation; the licence refresh then completes.
-- `x5/e.R` no longer compares the stored hash against the runtime
-  Adler-32 of the installed dex, which is what kept a patched app in its
-  loading state forever.
+- The profile-table call site reads the bundled `zV.json` with a
+  `Scanner` against the same raw resource the original call passes to
+  the native reader, so the app picks the profile entry matching the
+  device on its own. Registers and the resource id are taken from the
+  original instructions.
+- The signed-request launcher — the single choke point for every signed
+  request — returns a synchronously parsed premium response. The
+  licence type is computed from `xf/b` at runtime and the update-check
+  keys echo the installed package version read through the package
+  manager, so nothing version-specific is baked into the patch.
+- The profile-config fetcher is the one caller that must not see that
+  response (it expects the server-tuned profile array); its call site
+  now constructs a plain offline failure so the bundled-table fallback
+  runs.
+- The licence refresh skips an await on a pending-request flow that
+  nothing feeds without the donate-app activation.
+- The loading-state gate no longer compares the stored hash against the
+  runtime Adler-32 of the installed dex, which is what kept a patched
+  app loading forever.
 
-The offline response reports the pinned version as the latest one, so the
-in-app update check always completes with "up to date". Watch upstream
+The in-app update check always completes with "up to date", because the
+licence server cannot validate a re-signed install. Watch upstream
 releases yourself; when a new Galaxy MaxHz version ships, the patch is
 bumped to it anyway.
 
@@ -60,7 +72,7 @@ baked per patch run so it stays stable for that install.
 
 ## Verify on device
 
-1. Patch a stock 9.2.0x APK with Unlock Premium.
+1. Patch a stock 9.2.0x or 9.2.1x APK with Unlock Premium.
 2. Install, open once, and tap through the Android permission-review
    dialog (the app targets an old SDK, so Android shows it once per
    install).
@@ -70,8 +82,9 @@ baked per patch run so it stays stable for that install.
 
 ## New app version
 
-Re-run the fingerprints against the new APK: the R8 names behind them
-(`t0/c1`, `fc/b`, `ka/e`, `pa/e`, `yf/b`, `x5/e`) move between releases.
-Update `COMPATIBILITY_GALAXYMAXHZ` with the new version, refresh the
-premium licence-type constant if `xf/b` changed, and keep the version
-keys in `OFFLINE_LICENSE_JSON` in sync with the pinned target.
+The fingerprints pin call structure, not R8 names where those moved
+between 9.2.0x and 9.2.1x (`Lia/l9` -> `Lia/m9`, `Lia/sa` -> `Lia/ta`,
+and the GmhApp hash fields swap). Re-run them against the new APK, add
+the version to `COMPATIBILITY_GALAXYMAXHZ`, and fix whatever site the
+patch-time error names — the patch itself carries no per-version data
+beyond the pinned target list.
