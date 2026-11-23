@@ -1,3 +1,13 @@
+## [1.18.0](https://github.com/0x11DFE/morphe-patches/compare/v1.17.0...v1.18.0) (2026-11-23)
+
+### New Features
+
+* **galaxymaxhz:** support 9.2.1x and drop all baked version data ([b18688c](https://github.com/0x11DFE/morphe-patches/commit/b18688ccf899990656c046412fa1dd7d1691b453))
+
+### Bug Fixes
+
+* **galaxymaxhz:** compile against the real dexlib2 accessors ([98dfc4c](https://github.com/0x11DFE/morphe-patches/commit/98dfc4cea52f7cd205aa016f456c7cd7d56e8a2d))
+
 ## [1.17.0](https://github.com/0x11DFE/morphe-patches/compare/v1.16.0...v1.17.0) (2026-11-23)
 
 ### New Features

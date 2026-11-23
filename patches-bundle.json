@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-23T20:47:05",
-  "description": "## [1.17.0](https://github.com/0x11DFE/morphe-patches/compare/v1.16.0...v1.17.0) (2026-11-23)\n\n### New Features\n\n* **galaxymaxhz:** rewrite Unlock Premium as a fully offline unlock ([ab92a54](https://github.com/0x11DFE/morphe-patches/commit/ab92a54dd06f5388d9ed399318432178b64196ee))\n\n### Bug Fixes\n\n* **galaxymaxhz:** fingerprints, honest update check, drop stock-crash patch ([d25bcf5](https://github.com/0x11DFE/morphe-patches/commit/d25bcf56ae565502c0bba7885f811bce3896e44a))",
-  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.17.0/patches-1.17.0.mpp",
+  "created_at": "2026-11-23T22:19:40",
+  "description": "## [1.18.0](https://github.com/0x11DFE/morphe-patches/compare/v1.17.0...v1.18.0) (2026-11-23)\n\n### New Features\n\n* **galaxymaxhz:** support 9.2.1x and drop all baked version data ([b18688c](https://github.com/0x11DFE/morphe-patches/commit/b18688ccf899990656c046412fa1dd7d1691b453))\n\n### Bug Fixes\n\n* **galaxymaxhz:** compile against the real dexlib2 accessors ([98dfc4c](https://github.com/0x11DFE/morphe-patches/commit/98dfc4cea52f7cd205aa016f456c7cd7d56e8a2d))",
+  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.18.0/patches-1.18.0.mpp",
   "signature_download_url": "",
-  "version": "1.17.0"
+  "version": "1.18.0"
 }
