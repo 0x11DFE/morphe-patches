@@ -160,10 +160,13 @@ val unlockPremiumPatch = bytecodePatch(
             if (context == scanner || context == idRegister) {
                 throw PatchException("profile-table call reuses the context register")
             }
-            val id = instructions.take(callIndex).mapNotNull { it as? Instruction31i }
+            val idInstruction = instructions.take(callIndex)
+                .mapNotNull { it as? Instruction31i }
                 .lastOrNull { it.registerA == idRegister }
                 ?: throw PatchException("profile-table resource id not found before the call")
-            val hex = Integer.toHexString(id.narrowLiteral())
+            val hex = java.lang.Long.toHexString(
+                (idInstruction as com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstruction).narrowLiteral.toLong() and 0xffffffffL,
+            )
             removeInstructions(callIndex, 2)
             addInstructions(
                 callIndex,
@@ -245,7 +248,7 @@ val unlockPremiumPatch = bytecodePatch(
             }
             val result = (instructions[callIndex + 1] as Instruction11x).registerA
             val temp = when (val invoke = instructions[callIndex]) {
-                is Instruction3rc -> invoke.registerC
+                is Instruction3rc -> invoke.startRegister
                 is Instruction35c -> invoke.registerC
                 else -> throw PatchException("unexpected invoke format at the signed-request call")
             }
