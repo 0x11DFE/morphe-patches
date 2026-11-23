@@ -1,3 +1,13 @@
+## [1.17.0](https://github.com/0x11DFE/morphe-patches/compare/v1.16.0...v1.17.0) (2026-11-23)
+
+### New Features
+
+* **galaxymaxhz:** rewrite Unlock Premium as a fully offline unlock ([ab92a54](https://github.com/0x11DFE/morphe-patches/commit/ab92a54dd06f5388d9ed399318432178b64196ee))
+
+### Bug Fixes
+
+* **galaxymaxhz:** fingerprints, honest update check, drop stock-crash patch ([d25bcf5](https://github.com/0x11DFE/morphe-patches/commit/d25bcf56ae565502c0bba7885f811bce3896e44a))
+
 ## [1.16.0](https://github.com/0x11DFE/morphe-patches/compare/v1.15.0...v1.16.0) (2026-11-23)
 
 ### New Features

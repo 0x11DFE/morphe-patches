@@ -23,7 +23,7 @@ are responsible for what you do with it.
 ## Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.16.0](https://github.com/0x11DFE/morphe-patches/releases/tag/v1.16.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;12 patches total
+> **[v1.17.0](https://github.com/0x11DFE/morphe-patches/releases/tag/v1.17.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;12 patches total
 <details open>
 <summary>📦 Scene&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
@@ -77,7 +77,7 @@ are responsible for what you do with it.
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Random device ID](docs/galaxy-maxhz/README.md#random-device-id) | Replaces the fixed salt in the native device fingerprint with a random salt baked in when the patch is applied, so each patched APK reports its own stable device id to the licensing server. Re-patch for a new id. The local license check does not use the salt and keeps working. |  |
-| [Unlock Premium](docs/galaxy-maxhz/README.md#unlock-premium) | Unlocks all premium features by forcing the license verdicts to true. The native license library and its tamper checks are kept out of the loop, so the patched and re-signed APK runs normally. |  |
+| [Unlock Premium](docs/galaxy-maxhz/README.md#unlock-premium) | Unlocks premium locally and fully offline. Every signed licence and config request is answered with a valid premium response, the startup APK self-check that would keep the app loading forever is bypassed, and refresh-rate profiles come from the app's own bundled device table. The licence server never validates a re-signed install, so no server connection is needed or attempted. |  |
 
 </details>
 
