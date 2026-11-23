@@ -7,93 +7,77 @@ then activates with the Google Play order number or PayPal code.
 
 ## Unlock Premium
 
-Unlocks all premium features by forcing the license verdicts to true. The
-native license library and its tamper checks are kept out of the loop, so the
-patched and re-signed APK runs normally.
+Unlocks premium fully offline. Every signed server request is answered
+locally with a valid premium response, the startup APK self-check is
+bypassed, and profile data comes from the app's own bundled device table.
+No server connection is made or needed for licensing, and the in-app update
+check reports the real latest release with its download link.
 
-Verified on version 9.2.0x (versionCode 369).
+## Fix Stock Crashes
+
+Fixes two crashes that also happen in the unpatched app: the refresh rate
+slider throwing when its value range collapses to zero, and the refresh
+rate overlay failing to reposition before it is attached to the window.
 
 ## How the license works
 
-- `Lia/m1;` is the license repository. It stores license fields in DataStore
-  (`gmh_ds.preferences_pb`) under hex-string keys: "0x3" (Integer), "0x4"
-  (Boolean), "0x5" (String, the order number), "0x6" (Long), "0x9" (Integer),
-  "0x17" (String). `m1.a(Lo1/a;)Z` reads the snapshot and asks
-  `Lt0/c1;->g1(...)` for the verdict.
-- `Lt0/c1;` is the validator object. Its checks run in `libgmh-lib.so` through
-  six JNI exports (`Java_t0_c1_e/f/g/h/i/z`):
-  - `g1` wraps native `g`: the premium verdict. Day-math on the stored Long
-    (expiry) plus comparisons against config ints in `Lxf/b;`
-    (513, 769, 1025, 1281, 1537, ...).
-  - `h1` wraps native `h`: a secondary verdict that feeds the worker flow.
-  - `f1` wraps native `f`: builds `Landroidx/appcompat/util/SeslUtil;`
-    (Integer, String, Long, boolean), the license-info value class. Despite
-    the name this is an app class renamed by R8.
-  - `i2` and `z` build JSON for the license request and remote config.
-  - `s` (from `GmhApp.onCreate`) is the native init: it resolves method IDs
-    for the callbacks `e1` (APK hash) and `k` (toast), verifies an APK-derived
-    hash against the constant `0xd4e1f21e`, and contains a deliberate crash
-    path for tampered builds.
-- `Luf/a;->a(J)` decrypts app strings: all literals are seed-decrypted from a
-  blob string in the dex. Seeds share the low word `0x012f1e0d`.
-- The donation app broadcasts `com.tribalfs.gmh.action_DONATED`;
-  `GmhBaseListener` forwards to `m1.d(code)`. The server is
-  `api.tribalfs.com`; responses use the same "0xN" JSON keys.
-- `KapWorker` revalidates the license. Its terminal step checks the premium
-  flow and stops when premium is true.
+The app signs every license request with a digest of its signing
+certificate folded in by the native `t0/c1` library, so a re-signed APK
+cannot talk to the real server at all. The server responses carry
+hex-named keys (`0x0` status, `0x10` licence type, `0x9` expiry date,
+`0x4` order code, plus `0x24`/`0x12`/`0x36` URL bookkeeping) that the app
+parses and stores in its DataStore. Three layers defend the premium
+state: the native init dereferences null when the installed APK hash
+does not match, `x5/e.R(boolean)` keeps the loading state active when
+`GmhApp.x != GmhApp.y` (a runtime Adler-32 of the installed dex), and the
+native `f`/`g`/`h` exports can exit the process on invalid licence input.
 
 ## What Unlock Premium changes
 
-| Target | Change |
-| --- | --- |
-| `Lt0/c1;->g1(Landroid/content/Context;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;)Z` | return true |
-| `Lt0/c1;->h1(Landroid/content/Context;Ljava/lang/Integer;)Z` | return true |
-| `Lt0/c1;->f1(...)Landroidx/appcompat/util/SeslUtil;` | build SeslUtil from params, premium true |
-| `Lt0/c1;->i2(...)Lorg/json/JSONObject;` | return empty JSONObject |
-| `Lt0/c1;->z(Landroid/content/Context;I)Lorg/json/JSONObject;` | return empty JSONObject |
-| `Landroidx/appcompat/util/SeslUtil;-><init>(Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Long;Z)V` | force the boolean parameter true |
-| `Lcom/tribalfs/gmh/application/GmhApp;->onCreate()V` | nop the `c1.s(Context)` call |
+- `t0/c1.e1` returns the expected APK hash so the native init completes,
+  and stores it into `GmhApp.x`.
+- `t0/c1.f1` builds the licence-info object directly with the premium
+  licence type (`xf/b.f * xf/b.h`, computed at runtime) and no expiry;
+  `g1`/`h1` answer their verdicts with true.
+- The `SeslUtil` constructor forces its premium boolean before storing it.
+- `fc/b.s` reads the bundled `zV.json` (raw resource `0x7f130005`) with a
+  `Scanner` instead of calling the remote profile fetch, so the app picks
+  the profile entry matching the device on its own.
+- `ka/e.b` — the single choke point for every signed request — returns a
+  synchronously parsed premium response. The callers' own parsers store
+  and apply it as if the server had sent it.
+- `pa/e` is the one caller that must not see that response (it expects the
+  server-tuned profile array under `0x13`); its call site now constructs
+  a plain offline failure so the bundled-config fallback runs.
+- `yf/b` skips an await on a pending-request flow that nothing feeds
+  without the donate-app activation; the licence refresh then completes.
+- `x5/e.R` no longer compares the stored hash against the runtime
+  Adler-32 of the installed dex, which is what kept a patched app in its
+  loading state forever.
+
+The offline response embeds the current public release (9.2.1x / 370 with
+the GitHub APK link). Bump `OFFLINE_LICENSE_JSON` in the patch when a new
+Galaxy MaxHz version ships.
 
 ## Random device ID
 
-Replaces the fixed salt in the native device fingerprint with a random salt
-baked in when the patch is applied. Each patched APK reports its own stable
-device id to the licensing server; re-patch the APK to get a new id. The
-local license check does not use the salt and keeps working.
-
-The salt is generated per patch run, like the Scene "Random device ID" patch.
-With Unlock Premium applied the license requests are stubbed, so this patch
-matters when the app runs the native request path.
-
-Verified on version 9.2.0x (versionCode 369).
-
-### How the device id is built
-
-`libgmh-lib.so` builds the device id from reflection specs that
-`Lt0/c1;->hh()` and `Lt0/c1;->hg()` return:
-
-- `hh()` = ["android_id", "android/provider/Settings$Secure", "getString",
-  "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",
-  "TR2IWE3S7uNtKeHz4A7GNA=="]. The last element is the digest salt.
-- `hg()` = the MessageDigest/Base64 pipeline plus the same salt.
-- `hi()`/`hj()` = APK signature reads. `hk()` = boot_count.
-
-The patch keeps elements 0 to 3 unchanged and bakes a random 24-char Base64
-salt as element 4. The digest over android_id plus the random salt makes the
-reported device id unique per patched APK. The local verdict `g` validates
-the stored fields against the APK hash only, so an activated license stays
-valid.
+Replaces the device identity string the app sends with a random one,
+baked per patch run so it stays stable for that install.
 
 ## Verify on device
 
-1. Apply the patch in Morphe Manager and install the patched APK.
-2. Open Galaxy MaxHz. Premium-only entries (for example per-app profiles,
-   resolution control in quick settings, max Hz presets) are available.
-3. The donate dialog reports premium active.
+1. Patch a stock 9.2.0x APK with Unlock Premium (and Fix Stock Crashes).
+2. Install, open once, and tap through the Android permission-review
+   dialog (the app targets an old SDK, so Android shows it once per
+   install).
+3. The splash clears, the brief loading indicator hides, and the About
+   screen shows Premium with the 9.2.1x update available.
+4. Airplane mode changes nothing: every request path is answered locally.
 
 ## New app version
 
-R8 names such as `Lt0/c1;` and `Luf/a;` change between releases. Locate the
-validator by the string-decrypt calls (`Luf/a;->a(J)` with seeds ending
-`0x012f1e0d`) and by the native exports `Java_t0_c1_*` in libgmh-lib.so, then
-re-verify each target above and add the version to the compatibility constant.
+Re-run the fingerprints against the new APK: the R8 names in this patch
+(`t0/c1`, `fc/b`, `ka/e`, `pa/e`, `yf/b`, `x5/e`, `q8/d`, `fa/r0`) move
+between releases. Update `COMPATIBILITY_GALAXYMAXHZ` with the new
+version, refresh the premium licence-type constant if `xf/b` changed,
+and bump the embedded release info in `OFFLINE_LICENSE_JSON`.
