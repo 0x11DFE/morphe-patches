@@ -196,10 +196,11 @@ val unlockPremiumPatch = bytecodePatch(
         SignedRequestLauncherFingerprint.method.apply {
             ensureRegisters(11)
             clearBody()
+            val smaliJson = OFFLINE_LICENSE_BASE_JSON.replace("\"", "\\\"")
             addInstructions(
                 0,
                 """
-                const-string v0, "$OFFLINE_LICENSE_BASE_JSON"
+                const-string v0, "$smaliJson"
                 new-instance v1, Lorg/json/JSONObject;
                 invoke-direct {v1, v0}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
                 sget v3, Lxf/b;->f:I
