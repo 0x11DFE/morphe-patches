@@ -1,3 +1,9 @@
+## [1.16.0](https://github.com/0x11DFE/morphe-patches/compare/v1.15.0...v1.16.0) (2026-11-23)
+
+### New Features
+
+* **galaxymaxhz:** bake the device id salt per patch run ([cfe69bc](https://github.com/0x11DFE/morphe-patches/commit/cfe69bc57d1e4185c6305960a896dc36376d3cd1))
+
 ## [1.15.0](https://github.com/0x11DFE/morphe-patches/compare/v1.14.0...v1.15.0) (2026-11-23)
 
 ### New Features
