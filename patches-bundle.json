@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-23T22:28:16",
-  "description": "## [1.18.1](https://github.com/0x11DFE/morphe-patches/compare/v1.18.0...v1.18.1) (2026-11-23)\n\n### Bug Fixes\n\n* re-release pending Galaxy MaxHz changes ([67f025f](https://github.com/0x11DFE/morphe-patches/commit/67f025f5fdfd3241e8d0b288e57d2acd5d7f7515))",
-  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.18.1/patches-1.18.1.mpp",
+  "created_at": "2026-11-23T22:43:09",
+  "description": "## [1.18.2](https://github.com/0x11DFE/morphe-patches/compare/v1.18.1...v1.18.2) (2026-11-23)\n\n### Bug Fixes\n\n* **galaxymaxhz:** escape the JSON quotes for the smali assembler ([2da8e84](https://github.com/0x11DFE/morphe-patches/commit/2da8e848121a4e4f1b6a057374537ed0a36914c6))",
+  "download_url": "https://github.com/0x11DFE/morphe-patches/releases/download/v1.18.2/patches-1.18.2.mpp",
   "signature_download_url": "",
-  "version": "1.18.1"
+  "version": "1.18.2"
 }

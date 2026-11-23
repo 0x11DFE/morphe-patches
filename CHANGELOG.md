@@ -1,3 +1,9 @@
+## [1.18.2](https://github.com/0x11DFE/morphe-patches/compare/v1.18.1...v1.18.2) (2026-11-23)
+
+### Bug Fixes
+
+* **galaxymaxhz:** escape the JSON quotes for the smali assembler ([2da8e84](https://github.com/0x11DFE/morphe-patches/commit/2da8e848121a4e4f1b6a057374537ed0a36914c6))
+
 ## [1.18.1](https://github.com/0x11DFE/morphe-patches/compare/v1.18.0...v1.18.1) (2026-11-23)
 
 ### Bug Fixes
